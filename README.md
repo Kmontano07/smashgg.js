@@ -218,10 +218,16 @@ ceo2016.on('ready', function(){
 * **getTimezone()**
     * returns the string timezone the tournament occurred in
 * **getStartTime()**
+    * returns a JS Date object for the start time of the tournament
+* **getStartTimeString()**
     * returns a string 'MM-DD-YYYY HH:mm:ss tz' for the start time of the tournament
 * **getEndTime()**
+    * returns a JS Date object for the end time of the tournament
+* **getEndTimeString()**
     * returns a string 'MM-DD-YYYY HH:mm:ss tz' for the end time of the tournament
 * **getWhenRegistrationCloses()**
+    * returns a JS Date object for the time registration is set to close
+* **getWhenRegistrationClosesString()**
     * returns a string 'MM-DD-YYYY HH:mm:ss tz' for the time registration is set to close
 * **getCity()**
     * returns the city where the tournament occurred
@@ -316,9 +322,13 @@ event3.on('ready', function(){
     * returns the name of the event
 * **getSlug()**
     * returns the slug for the event
-* **getStartTime()**
+* **getStartTime**
+    * returns a JS Date object for when the event is set to begin
+* **getStartTimeString()**
     * returns a date string (MM-DD-YYYY HH:mm:ss tz) for when the event is set to begin
-* **getEndTime()**
+* **getEndTime**
+    * returns a JS Date object for when the event is set to end
+* **getEndTimeString()**
     * returns a date string (MM-DD-YYYY HH:mm:ss tz) for when the event is set to end
 
 ## Phase
