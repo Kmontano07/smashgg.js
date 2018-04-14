@@ -4,6 +4,9 @@ let _ = require('lodash');
 let moment = require('moment');
 
 let Event = require('../lib/Event');
+let EventById = require('../lib/EventById');
+let EventByNames = require('../lib/EventByNames');
+
 let Phase = require('../lib/Phase');
 let PhaseGroup = require('../lib/PhaseGroup');
 let Cache = require('../lib/util/Cache').getInstance();
@@ -19,13 +22,16 @@ let event1 = {};
 let event2 = {};
 let event3 = {};
 let event4 = {};
+let event5 = {};
 
 const TOURNAMENT_NAME1 = 'function1';
-const EVENT_NAME1 = 'melee-singles';
-
 const TOURNAMENT_NAME2 = 'ceo2016';
 const TOURNAMENT_NAME3 = 'to12';
+const EVENT_NAME1 = 'melee-singles';
 const BAD_TOURNAMENT_NAME = 'badnamedotexe';
+
+const URL1 = 'api.smash.gg/tournament/function-1-recursion-regional/event/melee-singles';
+const URL2 = 'api.smash.gg/tournament/ceo-2016/event/melee-singles?expand[]=phase&expand[]=groups&';
 
 const EVENT_ID_1 = 14335;
 
@@ -33,9 +39,9 @@ let expected = _.extend(
 
 );
 
-function loadEvent(tournamentName, eventName){
+function loadEvent(url){
     return new Promise(function(resolve, reject){
-        let event = new Event(tournamentName, eventName);
+        let event = new Event(url);
         event.on('ready', function(){
             resolve(event);
         })
@@ -44,12 +50,21 @@ function loadEvent(tournamentName, eventName){
 
 function loadEventViaId(id){
     return new Promise(function(resolve, reject){
-        let event = new Event(null, null, null, null, id);
+        let event = new EventById(id);
         event.on('ready', function(){
             resolve(event);
-        })
+        });
         event.on('error', function(err){
             console.error(err);
+        })
+    })
+}
+
+function loadEventViaNames(tournamentName, eventName){
+    return new Promise(function(resolve, reject){
+        let event = new EventByNames(tournamentName, eventName);
+        event.on('ready', function(){
+            resolve(event);
         })
     })
 }
@@ -63,9 +78,14 @@ describe('Smash GG Event', function(){
     it('should correctly load the data', async function(){
         this.timeout(15000);
 
-        event1 = await loadEvent(TOURNAMENT_NAME1, EVENT_NAME1);
-        event2 = await loadEvent(TOURNAMENT_NAME2, EVENT_NAME1);
-        event3 = await loadEventViaId(EVENT_ID_1);
+        event1 = await EventByNames.get(TOURNAMENT_NAME1, EVENT_NAME1); //function 1, melee singles
+        event2 = await EventByNames.get(TOURNAMENT_NAME2, EVENT_NAME1); // ceo2016, melee singles
+        event3 = await EventById.get(EVENT_ID_1);
+        event4 = await Event.get(URL1); //function 1, melee singles
+        event5 = await Event.get(URL2); //ceo2016, melee singles
+
+        expect(event4.raw).to.be.equal(event1.raw);
+        expect(event5.raw).to.be.equal(event2.raw);
 
         return true;
     });

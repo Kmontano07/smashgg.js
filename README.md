@@ -246,62 +246,91 @@ ceo2016.on('ready', function(){
 * **getProcessingFee()**
     * return the cost of the processing fee to register for the tournament
 
-## Event
+## Events
 An Event in smash.gg is a broad collection of matches for a single game and game type.
 For instance, Melee Singles is an Event while Melee Doubles is another Event. Events
 are comprised of optional Phases and Phases Groups.
 
 ```javascript
-var event1 = new smashgg.Event('to12', 'melee-singles');
-event1.on('ready', function(){
-    //do stuff with event1
-})
+var Event = smashgg.Event;
+var EventById = smashgg.EventById;
+var EventByNames = smashgg.EventByNames;
 
-var event2 = new smashgg.Event(
-    'ceo-2106',
-    'melee-singles',
-    {
-        phase: true,
-        groups: false
-    },
-    false
-);
-event2.on('ready', function(){
-    //do stuff with event2
-}
+//Get Function 1, Melee Singles
+var event1 =
+    await Event.get('https://api.smash.gg/tournament/function-1-recursion-regional/event/melee-singles');
 
-//additional constructor for id-only pulling
-var eventId = 14335;
-var event3 = new smashgg.Event(null, null, null, null, eventId);
-event3.on('ready', function(){
-    //do stuff with event3
-})
+// Get CEO 2016, Melee Singles
+var event2 =
+    await Event.get('api.smash.gg/tournament/ceo-2016/event/melee-singles?expand[]=phase&expand[]=groups&');
+
+// Get Rocket Leauge, 3v3s
+var event3 = await EventById.get(14335);
+
+// Get Function 1, Melee Singles
+var event4 = await EventByNames.get('function1', 'melee-singles');
+
+// Get CEO 2016, Melee Singles
+var event5 = await EventByNames.get('ceo2016', 'melee-singles');
 ```
+### Event
+#### Constructor
+* **Event([url, expands, isCached])**
+    * **url** - full api url of the intended Event.
+        * In-URL expands will supercede the expands object
+        * It is not required to put the protocol (http/https) in the url
+    * **expands** - an object that defines which additional data is sent back. By default all values are marked true.
+        * phase - boolean -condensed data for the phases that comprises the event
+        * groups - boolean -condensed data for the groups that comprise the phases
+        * *[This object will be overriden by any expands in the url property]*
+    * **isCached** - boolean value for if the resulting object should be cached
 
-### Constructor
-* **Event(tournamentName, eventName [, expands, isCached])**
+#### Common Properties
+* **raw** - a base64 version of the raw Event JSON that comprises this object
+* **expands** - Object that asks smash.gg for more info when api is called
+* **expandsString** - url encoded string version of the expands object
+* **isCached** - True/False value of if the object should be cached
+* **url** - smash.gg api url used to create this Event object
+
+#### Object Construction
+* *static* **get(url [,expands, isCached])**
+---
+
+### EventByNames
+#### Constructor
+* **EventByNames(tournamentName, eventName [, expands, isCached])**
     * **tournamentName** [required] - tournament slug or shorthand name of the tournament
         * slug: ceo-2016
         * shorthand: to12 (for tipped-off-12-presented-by-the-lab-gaming-center)
     * **eventName** [required] - event slug
         * ex: melee-singles or bracket-pools
-    * **expands** - an object that defines which additional data is sent back. By default all values are marked true.
-        * phase - boolean -condensed data for the phases that comprises the event
-        * groups - boolean -condensed data for the groups that comprise the phases
-    * **isCached** - boolean value for if the resulting object should be cached
-    * **id** - UID for the event in question
 
-### Properties
-* **data** - a copy of the raw Event JSON that comprises this object
+#### Properties
 * **tournamentName** - the tournament name from the constructor, to which this event belongs
 * **eventName** - the event name from the constructor
-* **isCached** - True/False value of if the object should be cached
-* **expands** - Object that asks smash.gg for more info when api is called
-* **expandsString** - url encoded string version of the expands object
-* **url** - smash.gg api url used to create this Event object
 * **tournamentSlug** - the api slug for the tournament to which this event belongs
+* *also inherits the common properties from super*
 
-### Events
+#### Object Construction
+* *static* **get(tournamentName, eventName [,expands, isCached])**
+
+---
+
+### EventById
+#### Constructor
+* **EventById(id [, expands, isCached])**
+    * **id** - UID for the event in question
+
+#### Properties
+* **id** - the event id from the constructor
+* *also inherits the common properties from super*
+
+#### Object Construction
+* *static* **get(id [,expands, isCached])**
+
+---
+
+### EventEmitter Events
 * **'ready'**
     * indicates when the Event object is populated with data
 * **'error'**
@@ -318,15 +347,17 @@ event3.on('ready', function(){
     * **fromCacheTF** - boolean value for if the value should be retrieved from cache. Defaults to true
 
 #### Getters
+* **getRaw()**
+    * decrypts the base64 raw into JSON
 * **getName()**
     * returns the name of the event
 * **getSlug()**
     * returns the slug for the event
-* **getStartTime**
+* **getStartTime()**
     * returns a JS Date object for when the event is set to begin
 * **getStartTimeString()**
     * returns a date string (MM-DD-YYYY HH:mm:ss tz) for when the event is set to begin
-* **getEndTime**
+* **getEndTime()**
     * returns a JS Date object for when the event is set to end
 * **getEndTimeString()**
     * returns a date string (MM-DD-YYYY HH:mm:ss tz) for when the event is set to end
