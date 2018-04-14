@@ -1,6 +1,7 @@
 'use strict';
 
 let _ = require('lodash');
+let moment = require('moment');
 
 let Event = require('../lib/Event');
 let Phase = require('../lib/Phase');
@@ -85,6 +86,13 @@ describe('Smash GG Event', function(){
 
     it('should correctly get the event start time', function(done){
         let startTime1 = event1.getStartTime();
+        let expected = moment('04-01-2017 11:00:00').toDate();
+        expect(startTime1.getTime()).to.be.equal(expected.getTime());
+        done();
+    });
+
+    it('should correctly get the event start time string', function(done){
+        let startTime1 = event1.getStartTimeString();
 
         try {
             expect(startTime1).to.be.equal('04-01-2017 11:00:00 EST');
@@ -97,7 +105,13 @@ describe('Smash GG Event', function(){
 
     it('should correctly get the event end time', function(done){
         let endTime1 = event1.getEndTime();
-        let endTime2 = event2.getEndTime();
+        let expected = moment('04-01-2017 12:00:00').toDate();
+        expect(endTime1.getTime()).to.be.equal(expected.getTime());
+        done();
+    });
+
+    it('should correctly get the event end time string', function(done){
+        let endTime1 = event1.getEndTimeString();
 
         try {
             expect(endTime1).to.be.equal('04-01-2017 12:00:00 EST');
